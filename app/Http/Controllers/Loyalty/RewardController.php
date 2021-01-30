@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Loyalty;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Loyalty\Reward;
+use App\Models\Loyalty\Reward as Obj;
+use App\Models\Loyalty\Customer;
 
 class RewardController extends Controller
 {
@@ -27,11 +28,12 @@ class RewardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Obj $obj)
     {
-        // ddd($this->componentName);
+
         return view("apps.".$this->app.".".$this->module.".index")
-                    ->with('app', $this);
+                ->with("app", $this)
+                ->with("obj", $obj);
     }
 
     /**
@@ -39,9 +41,19 @@ class RewardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Obj $obj)
     {
-        //
+        // Authorize the request
+        $this->authorize('create', $obj);
+
+        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
+
+        return view("apps.".$this->app.".".$this->module.".createEdit")
+                ->with("stub", "create")
+                ->with("app", $this)
+                ->with("objs", $obj)
+                ->with("categories", $categories)
+                ->with("tags", $tags);
     }
 
     /**
@@ -50,53 +62,133 @@ class RewardController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Obj $obj, Request $request)
     {
-        //
+        // Authorize the request
+        $this->authorize('create', $obj);
+        
+        // Check for when to publish
+        if($request->input('publish') == "now" ){
+            $status = 1;
+        }
+        else if($request->input('publish') == "save_as_draft"){
+            $status = 0;
+        }   
+        
+        // Store the records
+        $obj = $obj->create($request->all() + ['status' => $status]);
+
+        if($request->input('tag_ids')){
+            foreach($request->input('tag_ids') as $tag_id){
+                if(!$obj->tags->contains($tag_id)){
+                    $obj->tags()->attach($tag_id);
+                }
+            }
+        }
+
+        return redirect()->route($this->module.'.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Reward  $reward
+     * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Reward $reward)
+    public function show(Obj $obj, Request $request)
     {
-        //
+        $phone = $request->input('phone');
+
+        $customer =  Customer::where('phone', $phone)->get();
+
+        if($customer->count() == 1){
+            return view("apps.".$this->app.".".$this->module.".show")
+                    ->with("app", $this)
+                    ->with("obj", $obj);
+        }   
+
+        return view("apps.".$this->app.".".$this->module.".show")
+                ->with("app", $this)
+                ->with("obj", $obj);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Reward  $reward
+     * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit(Reward $reward)
+    public function edit($slug, Obj $obj)
     {
-        //
+        // Retrieve Specific record
+        $obj = $obj->getRecord($slug);
+        // Authorize the request
+        $this->authorize('create', $obj);
+
+        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
+
+        return view("apps.".$this->app.".".$this->module.".createEdit")
+                ->with("stub", "update")
+                ->with("app", $this)
+                ->with("obj", $obj)
+                ->with("categories", $categories)
+                ->with("tags", $tags);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Reward  $reward
+     * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Reward $reward)
+    public function update(Request $request, Obj $obj, $id)
     {
-        //
+
+        // load the resource
+        $obj = Obj::where('id',$id)->first();
+        // authorize the app
+        $this->authorize('update', $obj);
+
+        // Check for when to publish
+        if($request->input('publish') == "now" ){
+            $status = 1;
+        }
+        else if($request->input('publish') == "save_as_draft"){
+            $status = 0;
+        }   
+
+        //update the resource
+        $obj->update($request->all() + ['status' => $status]);
+
+        $obj->tags()->detach();
+
+        if($request->input('tag_ids')){
+            foreach($request->input('tag_ids') as $tag_id){
+                if(!$obj->tags->contains($tag_id)){
+                    $obj->tags()->attach($tag_id);
+                }
+            }
+        }
+        
+        return redirect()->route($this->module.'.list');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Reward  $reward
+     * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Reward $reward)
-    {
-        //
+    public function destroy($id)
+    {   
+        // load the resource
+        $obj = Obj::where('id',$id)->first();
+        // authorize
+        $this->authorize('update', $obj);
+        // delete the resource
+        $obj->delete();
+
+        return redirect()->route($this->module.'.list');
     }
 }

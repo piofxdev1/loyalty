@@ -14,19 +14,19 @@ class CustomerSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('customer')->insert([
+        DB::table('customers')->insert([
             'name' => 'Kamal',
             'phone' => '9550184196',
             'email' => 'kamal@gmail.com',
         ]);
 
-        DB::table('customer')->insert([
+        DB::table('customers')->insert([
             'name' => 'Teja',
             'phone' => '8688079590',
             'email' => 'teja@gmail.com',
         ]);
 
-        DB::table('customer')->insert([
+        DB::table('customers')->insert([
             'name' => 'Sabiha',
             'phone' => '8247354466',
             'email' => 'sabiha@gmail.com',

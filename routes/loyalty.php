@@ -10,11 +10,12 @@ Route::get('/loyalty/reward/create', [RewardController::class, 'create'])->name(
 Route::post('/loyalty/reward/create', [RewardController::class, 'store'])->name('Reward.store');
 Route::get('/loyalty/reward/edit', [RewardController::class, 'edit'])->name('Reward.edit');
 Route::put('/loyalty/reward/edit', [RewardController::class, 'update'])->name('Reward.update');
-Route::delete('/loyalty/reward/edit', [RewardController::class, 'delete'])->name('Reward.delete');
+Route::delete('/loyalty/reward/{id}', [RewardController::class, 'delete'])->name('Reward.delete');
 Route::get('/loyalty/reward/show', [RewardController::class, 'show'])->name('Reward.show');
 
 // Customer Routes
 Route::get('/loyalty/customer', [CustomerController::class, 'index'])->name('Customer.index');
+Route::get('/loyalty/customer/rewards', [CustomerController::class, 'show'])->name('Customer.show');
 
 // Setting Routes
 Route::get('/loyalty/settings', [LoyaltySettingsController::class, 'index'])->name('Setting.index');

@@ -14,19 +14,19 @@ class RewardSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('reward')->insert([
+        DB::table('rewards')->insert([
             'customer_id' => 1,
-            'phone' => 9550184196,
+            'phone' => '9550184196',
         ]);
 
-        DB::table('reward')->insert([
+        DB::table('rewards')->insert([
             'customer_id' => 2,
-            'phone' => 8688079590,
+            'phone' => '8688079590',
         ]);
 
-        DB::table('reward')->insert([
+        DB::table('rewards')->insert([
             'customer_id' => 3,
-            'phone' => 8247354466,
+            'phone' => '8247354466',
         ]);
     }
 }

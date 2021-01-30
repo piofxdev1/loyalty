@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Loyalty;
 
-use App\Models\Loyalty\LoyaltySettings;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
+use App\Models\Loyalty\LoyaltySettings as Obj;
 
 class LoyaltySettingsController extends Controller
 {
