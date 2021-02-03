@@ -11,6 +11,8 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'phone', 'email', 'address'];
+
     public function rewards(){
         return $this->hasMany(Reward::class);
     }

@@ -65,16 +65,8 @@ class RewardController extends Controller
     public function store(Obj $obj, Request $request)
     {
         // Authorize the request
-        $this->authorize('create', $obj);
-        
-        // Check for when to publish
-        if($request->input('publish') == "now" ){
-            $status = 1;
-        }
-        else if($request->input('publish') == "save_as_draft"){
-            $status = 0;
-        }   
-        
+        // $this->authorize('create', $obj);
+    
         // Store the records
         $obj = $obj->create($request->all() + ['status' => $status]);
 
@@ -98,18 +90,28 @@ class RewardController extends Controller
     public function show(Obj $obj, Request $request)
     {
         $phone = $request->input('phone');
-
-        $customer =  Customer::where('phone', $phone)->get();
-
-        if($customer->count() == 1){
-            return view("apps.".$this->app.".".$this->module.".show")
-                    ->with("app", $this)
-                    ->with("obj", $obj);
-        }   
-
-        return view("apps.".$this->app.".".$this->module.".show")
+        
+        $objs = $obj->where('phone', $phone)->get(); 
+        
+        if($objs->count() >= 1){        
+            $remaining_credits = 0;
+            
+            foreach($objs as $reward){
+                $remaining_credits = $remaining_credits + ($reward->credits - $reward->redeem);
+            }
+            
+            return view("apps.".$this->app.".".$this->module.".public")
                 ->with("app", $this)
-                ->with("obj", $obj);
+                ->with("objs", $objs)
+                ->with("phone", $phone)
+                ->with("remaining_credits", $remaining_credits);
+        }  
+
+        return view("apps.".$this->app.".".$this->module.".public")
+                ->with("app", $this)
+                ->with("objs", $objs)
+                ->with("phone", $phone)
+                ->with("alert", "No Records Found. Please talk with the Sales Executive");
     }
 
     /**
@@ -190,5 +192,39 @@ class RewardController extends Controller
         $obj->delete();
 
         return redirect()->route($this->module.'.list');
+    }
+
+    public function public(Obj $obj, Request $request){
+
+        // ddd($request);
+
+        if(!empty($request->input('phone'))){
+            $phone = $request->input('phone');
+        
+            $objs = $obj->where('phone', $phone)->get(); 
+            
+            if($objs->count() >= 1){        
+                $remaining_credits = 0;
+                
+                foreach($objs as $reward){
+                    $remaining_credits = $remaining_credits + ($reward->credits - $reward->redeem);
+                }
+                
+                return view("apps.".$this->app.".".$this->module.".public")
+                    ->with("app", $this)
+                    ->with("objs", $objs)
+                    ->with("phone", $phone)
+                    ->with("remaining_credits", $remaining_credits);
+            }  
+    
+            return view("apps.".$this->app.".".$this->module.".public")
+                    ->with("app", $this)
+                    ->with("objs", $objs)
+                    ->with("phone", $phone)
+                    ->with("alert", "No Records Found. Please talk with the Sales Executive");
+        }
+
+        return view("apps.".$this->app.".".$this->module.".public")
+            ->with("app", $this);
     }
 }

@@ -22,6 +22,7 @@ class CreateRewardsTable extends Migration
             $table->bigInteger('credits')->default(0);
             $table->bigInteger('redeem')->default(0);
             $table->timestamps();
+            $table->foreign()->references('customer_id')->on("Customer")->onDelete("cascade");
         });
     }
 

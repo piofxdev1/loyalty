@@ -30,9 +30,13 @@ class CustomerController extends Controller
     public function index(Obj $obj)
     {
 
+        $objs = $obj->paginate();
+
+        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
+
         return view("apps.".$this->app.".".$this->module.".index")
                 ->with("app", $this)
-                ->with("obj", $obj);
+                ->with("objs", $objs);
     }
 
     /**
@@ -43,16 +47,14 @@ class CustomerController extends Controller
     public function create(Obj $obj)
     {
         // Authorize the request
-        $this->authorize('create', $obj);
+        // $this->authorize('create', $obj);
 
         $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
-        return view("apps.".$this->app.".".$this->module.".createEdit")
+        return view("apps.".$this->app.".".$this->module.".createedit")
                 ->with("stub", "create")
                 ->with("app", $this)
-                ->with("objs", $obj)
-                ->with("categories", $categories)
-                ->with("tags", $tags);
+                ->with("objs", $obj);
     }
 
     /**
@@ -61,31 +63,41 @@ class CustomerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Obj $obj, Request $request)
+    public function store(Obj $obj, Request $request, Reward $reward)
     {
         // Authorize the request
-        $this->authorize('create', $obj);
-        
-        // Check for when to publish
-        if($request->input('publish') == "now" ){
-            $status = 1;
-        }
-        else if($request->input('publish') == "save_as_draft"){
-            $status = 0;
-        }   
-        
-        // Store the records
-        $obj = $obj->create($request->all() + ['status' => $status]);
+        // $this->authorize('create', $obj);  
 
-        if($request->input('tag_ids')){
-            foreach($request->input('tag_ids') as $tag_id){
-                if(!$obj->tags->contains($tag_id)){
-                    $obj->tags()->attach($tag_id);
-                }
-            }
+        // Check if record already exists
+        $check = $obj->where("phone", $request->phone)->exists();
+        
+        // Store the records only if check returns false
+        if($check){
+            return view("apps.".$this->app.".".$this->module.".createedit")
+                    ->with("alert", "User Already Exists")
+                    ->with("stub", "create")
+                    ->with("app", $this)
+                    ->with("objs", $obj);
+        }
+        else{
+            $obj->create([
+                "name" => $request->input('name'),
+                "phone" => $request->input('phone'),
+                "email" => $request->input('email'),
+                "address" => $request->input('address'),
+            ]);
+    
+            $objs = $obj->where("phone", $request->input('phone'))->first();
+        
+            $reward->create([
+                "customer_id" => $objs->id,
+                "phone" => $request->phone,
+                "credits" => $request->input('credits')
+            ]);
+    
+            return redirect()->route('Reward.public');
         }
 
-        return redirect()->route($this->module.'.index');
     }
 
     /**
@@ -94,28 +106,16 @@ class CustomerController extends Controller
      * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Obj $obj, Request $request)
+    public function show(Obj $obj, $id)
     {
-        $phone = $request->input('phone');
+        $obj = $obj->where("id", $id)->first();
 
-        $obj = $obj->where('phone', $phone)->first();
+        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
-        if($obj){        
-            $remaining_credits = 0;
-
-            foreach($obj->rewards as $reward){
-                $remaining_credits = $remaining_credits + ($reward->credits - $reward->redeem);
-            }
-    
-            return view("apps.".$this->app.".".$this->module.".show")
-                    ->with("app", $this)
-                    ->with("obj", $obj)
-                    ->with("remaining_credits", $remaining_credits);
-        }   
-
-        // return view("apps.".$this->app.".".$this->module.".show")
-        //         ->with("app", $this)
-        //         ->with("obj", $obj);
+        // Return to create if record was not found
+        return view("apps.".$this->app.".".$this->module.".show")
+                ->with("app", $this)
+                ->with("obj", $obj);
     }
 
     /**
@@ -124,21 +124,19 @@ class CustomerController extends Controller
      * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit($slug, Obj $obj)
+    public function edit($id, Obj $obj)
     {
         // Retrieve Specific record
-        $obj = $obj->getRecord($slug);
+        $obj = $obj->where("id", $id)->first();
         // Authorize the request
-        $this->authorize('create', $obj);
+        // $this->authorize('create', $obj);
 
         $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
-        return view("apps.".$this->app.".".$this->module.".createEdit")
+        return view("apps.".$this->app.".".$this->module.".createedit")
                 ->with("stub", "update")
                 ->with("app", $this)
-                ->with("obj", $obj)
-                ->with("categories", $categories)
-                ->with("tags", $tags);
+                ->with("obj", $obj);
     }
 
     /**
@@ -152,32 +150,14 @@ class CustomerController extends Controller
     {
 
         // load the resource
-        $obj = Obj::where('id',$id)->first();
+        $obj = $obj->where('id',$id)->first();
         // authorize the app
-        $this->authorize('update', $obj);
-
-        // Check for when to publish
-        if($request->input('publish') == "now" ){
-            $status = 1;
-        }
-        else if($request->input('publish') == "save_as_draft"){
-            $status = 0;
-        }   
+        // $this->authorize('update', $obj);
 
         //update the resource
-        $obj->update($request->all() + ['status' => $status]);
+        $obj->update($request->all());
 
-        $obj->tags()->detach();
-
-        if($request->input('tag_ids')){
-            foreach($request->input('tag_ids') as $tag_id){
-                if(!$obj->tags->contains($tag_id)){
-                    $obj->tags()->attach($tag_id);
-                }
-            }
-        }
-        
-        return redirect()->route($this->module.'.list');
+        return redirect()->route($this->module.'.index');
     }
 
     /**
@@ -186,15 +166,16 @@ class CustomerController extends Controller
      * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Obj $obj)
     {   
+
         // load the resource
-        $obj = Obj::where('id',$id)->first();
+        $obj = $obj->where('id',$id)->first();
         // authorize
-        $this->authorize('update', $obj);
+        // $this->authorize('update', $obj);
         // delete the resource
         $obj->delete();
 
-        return redirect()->route($this->module.'.list');
+        return redirect()->route($this->module.'.index');
     }
 }

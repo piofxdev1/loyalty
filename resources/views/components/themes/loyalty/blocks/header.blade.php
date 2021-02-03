@@ -10,7 +10,7 @@
           <a class="nav-link" aria-current="page" href="#">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ route('Reward.index') }}">Reward</a>
+          <a class="nav-link" href="{{ route('Reward.public') }}">Reward</a>
         </li>
       </ul>
     </div>

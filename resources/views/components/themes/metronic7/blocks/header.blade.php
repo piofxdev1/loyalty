@@ -7,16 +7,16 @@
 			<!--begin::Left-->
 			<div class="d-flex align-items-center">
 				<!--begin::Logo-->
-					<a href="{{ route('Post.index') }}" class="mr-20">
+					<a href="" class="mr-20">
 						<img alt="Logo" src="{{ asset('img/logos/piofx-white.png')}}" class="max-h-45px" />
 					</a>
 				<!--end::Logo-->
 				<!--begin::Tab Navs(for desktop mode)-->
 				<div class="col-9 d-flex justify-content-center align-items-center">
-					<a href="{{ route('Post.index') }}" class="nav-link text-decoration-none text-white">Home</a>
-					<a href="{{ route('Post.list') }}" class="nav-link text-decoration-none text-white">Posts</a>
-					<a href="{{ route('Category.index') }}" class="nav-link text-decoration-none text-white">Categories</a>
-					<a href="{{ route('Tag.index') }}" class="nav-link text-decoration-none text-white">Tags</a>
+					<a href="" class="nav-link text-decoration-none text-white">Home</a>
+					<a href="" class="nav-link text-decoration-none text-white">Posts</a>
+					<a href="" class="nav-link text-decoration-none text-white">Categories</a>
+					<a href="" class="nav-link text-decoration-none text-white">Tags</a>
 				</div>
 
 				<!--begin::Tab Navs-->
