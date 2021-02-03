@@ -17,12 +17,12 @@ class CreateRewardsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('agency_id')->nullable();
             $table->bigInteger('client_id')->nullable();
-            $table->bigInteger('customer_id');
+            $table->unsignedBigInteger('customer_id');
             $table->text('phone');
-            $table->bigInteger('credits')->default(0);
-            $table->bigInteger('redeem')->default(0);
+            $table->bigInteger('credits')->nullable()->default(0);
+            $table->bigInteger('redeem')->nullable()->default(0);
             $table->timestamps();
-            $table->foreign()->references('customer_id')->on("Customer")->onDelete("cascade");
+            $table->foreign('customer_id')->references('id')->on("customers")->onDelete("cascade");
         });
     }
 

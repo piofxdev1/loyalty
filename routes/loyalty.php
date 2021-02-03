@@ -8,9 +8,9 @@ use App\Http\Controllers\Loyalty\LoyaltySettingsController;
 Route::get('/loyalty/reward', [RewardController::class, 'public'])->name('Reward.public');
 // Route::get('/loyalty/reward', [RewardController::class, 'index'])->name('Reward.index');
 // Route::get('/loyalty/reward/create', [RewardController::class, 'create'])->name('Reward.create');
-// Route::post('/loyalty/reward/create', [RewardController::class, 'store'])->name('Reward.store');
+Route::post('/loyalty/reward/create', [RewardController::class, 'store'])->name('Reward.store');
 // Route::get('/loyalty/reward/edit', [RewardController::class, 'edit'])->name('Reward.edit');
-// Route::put('/loyalty/reward/edit', [RewardController::class, 'update'])->name('Reward.update');
+// Route::put('/loyalty/reward/{id}', [RewardController::class, 'update'])->name('Reward.update');
 // Route::delete('/loyalty/reward/{id}', [RewardController::class, 'delete'])->name('Reward.delete');
 // Route::get('/loyalty/rewards/', [RewardController::class, 'show'])->name('Reward.show');
 

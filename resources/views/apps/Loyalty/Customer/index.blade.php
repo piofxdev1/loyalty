@@ -29,13 +29,13 @@
             <table class="table table-borderless bg-white">
                 <tr class="border-bottom">
                     <th scope="col" class="p-3">#</th>
-                    <th scope="col" class="p-3 text-decoration-none">Name</th>
+                    <th scope="col" class="p-3 text-decoration-none">@sortablelink('name', 'Name', ['filter' => 'active, visible'], ['class' => 'text-decoration-none text-dark text-hover-primary'])</th>
                     <th scope="col" class="p-3">Phone</th>
                     <th scope="col" class="p-3">Email</th>
                     <th scope="col" class="p-3">Address</th>
                     <th scope="col" class="p-3">Info</th>
-                    <th scope="col" class="p-3">Balance</th>
-                    <th scope="col" class="p-3">Created</th>
+                    <th scope="col" class="p-3 text-center">Balance</th>
+                    <th scope="col" class="p-3 text-center">Created</th>
                     <th scope="col" class="p-3 text-secondary font-weight-bolder text-center">Actions</th>
                 </tr>
                 @foreach($objs as $key=>$obj)
@@ -53,8 +53,8 @@
                         <td class="px-3 align-middle">{{ $obj->email }}</td>
                         <td class="px-3 align-middle">{{ $obj->address }}</td>
                         <td class="px-3 align-middle">{{ $obj->info }}</td>
-                        <td class="px-3 align-middle">{{ $remaining_credits }}</td>
-                        <td class="px-3 align-middle text-primary font-weight-bolder">{{ $obj->created_at ? $obj->created_at->diffForHumans() : '' }}</td>
+                        <td class="px-3 align-middle text-center"><span class="label label-lg font-weight-bold label-rounded label-dark label-pill label-inline">{{ $remaining_credits }}</span></td>
+                        <td class="px-3 align-middle text-primary font-weight-bolder text-center">{{ $obj->created_at ? $obj->created_at->diffForHumans() : '' }}</td>
                         <td class="px-3 d-flex align-items-center justify-content-center align-middle">
                             <!-- View Button-->
                             <a href="{{ route($app->module.'.show', $obj->id) }}" class="btn btn-sm btn-default btn-text-primary btn-hover-primary btn-icon mr-2"><i class="fas fa-eye m-0"></i></a>

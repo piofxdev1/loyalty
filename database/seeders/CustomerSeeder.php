@@ -18,18 +18,21 @@ class CustomerSeeder extends Seeder
             'name' => 'Kamal',
             'phone' => '9550184196',
             'email' => 'kamal@gmail.com',
+            'address' => 'F-303, Lakshman Kuteer Apartment, Jaihind Enclave, VIP Hills, Madhapur, 500081',
         ]);
 
         DB::table('customers')->insert([
             'name' => 'Teja',
             'phone' => '8688079590',
             'email' => 'teja@gmail.com',
+            'address' => 'F-303, Lakshman Kuteer Apartment, Jaihind Enclave, VIP Hills, Madhapur, 500081',
         ]);
 
         DB::table('customers')->insert([
             'name' => 'Sabiha',
             'phone' => '8247354466',
             'email' => 'sabiha@gmail.com',
+            'address' => 'F-303, Lakshman Kuteer Apartment, Jaihind Enclave, VIP Hills, Madhapur, 500081',
         ]);
     }
 }

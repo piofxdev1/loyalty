@@ -23,8 +23,24 @@
                 <h5>Number of remaining credits: <span class="font-weight-bolder">{{ $remaining_credits }}</span></h5>
             </div>
 
+            @auth
+                <form action="{{ route($app->module.'.store') }}" class="mt-5" method="POST">
+                    @csrf
+                    <div class="row">
+                        <div class="col">
+                            <label>Credit:</label>
+                            <input type="text" class="form-control" name="credit">
+                        </div>
+                        <div class="col">
+                            <label>Redeem:</label>
+                            <input type="text" class="form-control" name="redeem">
+                        </div>
+                    </div>
+                    <input type="text" hidden name="phone" value="{{ $phone }}">
+                    <button type="submit" class="btn btn-dark mt-3">Add</button>
+                </form>
+            @endauth
         @else
-
             @auth
                 <div class="p-5 mt-5 bg-white rounded shadow">
                     <h1 class="text-center">Create Customer</h1>

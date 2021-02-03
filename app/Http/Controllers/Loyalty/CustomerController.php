@@ -30,7 +30,7 @@ class CustomerController extends Controller
     public function index(Obj $obj)
     {
 
-        $objs = $obj->paginate();
+        $objs = $obj->sortable()->paginate();
 
         $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
@@ -67,6 +67,14 @@ class CustomerController extends Controller
     {
         // Authorize the request
         // $this->authorize('create', $obj);  
+
+        $validated = $request->validate([
+            "name" => 'required',
+            "phone" => 'required|digits:10',
+            "email" => 'required',
+            "address" => 'required',
+            "credits" => "required",
+        ]);
 
         // Check if record already exists
         $check = $obj->where("phone", $request->phone)->exists();

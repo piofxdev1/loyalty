@@ -67,18 +67,25 @@ class RewardController extends Controller
         // Authorize the request
         // $this->authorize('create', $obj);
     
+        
+        // Get customer id
+        $customer = Customer::where("phone", $request->input('phone'))->first();
+        // ddd($customer);
+
+        $credit = $request->input('credit');
+        $redeem = $request->input('redeem');
+
+        // ddd($credit);
+
         // Store the records
-        $obj = $obj->create($request->all() + ['status' => $status]);
+        $obj->create([
+            "customer_id" => $customer->id,
+            "phone" => $customer->phone,
+            "credits" => $request->input('credit'),
+            "redeem" => $request->input('redeem'),
+        ]);
 
-        if($request->input('tag_ids')){
-            foreach($request->input('tag_ids') as $tag_id){
-                if(!$obj->tags->contains($tag_id)){
-                    $obj->tags()->attach($tag_id);
-                }
-            }
-        }
-
-        return redirect()->route($this->module.'.index');
+        return redirect()->route($this->module.'.public');
     }
 
     /**
@@ -144,36 +151,21 @@ class RewardController extends Controller
      * @param  \App\Models\Blog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Obj $obj, $id)
+    public function update(Request $request, Obj $obj, $phone)
     {
 
         // load the resource
-        $obj = Obj::where('id',$id)->first();
+        $obj->where('phone',$phone)->first();
         // authorize the app
-        $this->authorize('update', $obj);
-
-        // Check for when to publish
-        if($request->input('publish') == "now" ){
-            $status = 1;
-        }
-        else if($request->input('publish') == "save_as_draft"){
-            $status = 0;
-        }   
+        // $this->authorize('update', $obj); 
 
         //update the resource
-        $obj->update($request->all() + ['status' => $status]);
+        $obj->create([
+            "credit" => $request->input("credit"),
+            "redeem" => $request->input("redeem"),
+        ]);
 
-        $obj->tags()->detach();
-
-        if($request->input('tag_ids')){
-            foreach($request->input('tag_ids') as $tag_id){
-                if(!$obj->tags->contains($tag_id)){
-                    $obj->tags()->attach($tag_id);
-                }
-            }
-        }
-        
-        return redirect()->route($this->module.'.list');
+        return redirect()->route($this->module.'.public');
     }
 
     /**
@@ -195,8 +187,6 @@ class RewardController extends Controller
     }
 
     public function public(Obj $obj, Request $request){
-
-        // ddd($request);
 
         if(!empty($request->input('phone'))){
             $phone = $request->input('phone');
