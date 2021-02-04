@@ -16,7 +16,7 @@ class Client
      */
     public function handle(Request $request, Closure $next)
     {
-        $theme = 'loyalty';
+        $theme = 'metronic7';
         session(['theme' => $theme]);
         session(['layout' => 'themes.'.$theme.'.layouts.app']);
         return $next($request);

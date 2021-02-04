@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Loyalty\Reward as Obj;
 use App\Models\Loyalty\Customer;
 
+use Illuminate\Support\Facades\Auth;
+
 class RewardController extends Controller
 {
 
@@ -21,6 +23,9 @@ class RewardController extends Controller
         $this->module   =   'Reward';
         $theme = session()->get('theme');
         $this->componentName = 'themes.'.$theme.'.layouts.app';
+
+        $user = Auth::user();
+        $this->user = $user;
     }
 
     /**
@@ -31,9 +36,6 @@ class RewardController extends Controller
     public function index(Obj $obj)
     {
 
-        return view("apps.".$this->app.".".$this->module.".index")
-                ->with("app", $this)
-                ->with("obj", $obj);
     }
 
     /**
@@ -43,17 +45,7 @@ class RewardController extends Controller
      */
     public function create(Obj $obj)
     {
-        // Authorize the request
-        $this->authorize('create', $obj);
 
-        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
-
-        return view("apps.".$this->app.".".$this->module.".createEdit")
-                ->with("stub", "create")
-                ->with("app", $this)
-                ->with("objs", $obj)
-                ->with("categories", $categories)
-                ->with("tags", $tags);
     }
 
     /**
@@ -96,29 +88,7 @@ class RewardController extends Controller
      */
     public function show(Obj $obj, Request $request)
     {
-        $phone = $request->input('phone');
-        
-        $objs = $obj->where('phone', $phone)->get(); 
-        
-        if($objs->count() >= 1){        
-            $remaining_credits = 0;
-            
-            foreach($objs as $reward){
-                $remaining_credits = $remaining_credits + ($reward->credits - $reward->redeem);
-            }
-            
-            return view("apps.".$this->app.".".$this->module.".public")
-                ->with("app", $this)
-                ->with("objs", $objs)
-                ->with("phone", $phone)
-                ->with("remaining_credits", $remaining_credits);
-        }  
-
-        return view("apps.".$this->app.".".$this->module.".public")
-                ->with("app", $this)
-                ->with("objs", $objs)
-                ->with("phone", $phone)
-                ->with("alert", "No Records Found. Please talk with the Sales Executive");
+ 
     }
 
     /**
@@ -129,19 +99,7 @@ class RewardController extends Controller
      */
     public function edit($slug, Obj $obj)
     {
-        // Retrieve Specific record
-        $obj = $obj->getRecord($slug);
-        // Authorize the request
-        $this->authorize('create', $obj);
 
-        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
-
-        return view("apps.".$this->app.".".$this->module.".createEdit")
-                ->with("stub", "update")
-                ->with("app", $this)
-                ->with("obj", $obj)
-                ->with("categories", $categories)
-                ->with("tags", $tags);
     }
 
     /**
@@ -154,18 +112,7 @@ class RewardController extends Controller
     public function update(Request $request, Obj $obj, $phone)
     {
 
-        // load the resource
-        $obj->where('phone',$phone)->first();
-        // authorize the app
-        // $this->authorize('update', $obj); 
 
-        //update the resource
-        $obj->create([
-            "credit" => $request->input("credit"),
-            "redeem" => $request->input("redeem"),
-        ]);
-
-        return redirect()->route($this->module.'.public');
     }
 
     /**
@@ -176,14 +123,7 @@ class RewardController extends Controller
      */
     public function destroy($id)
     {   
-        // load the resource
-        $obj = Obj::where('id',$id)->first();
-        // authorize
-        $this->authorize('update', $obj);
-        // delete the resource
-        $obj->delete();
-
-        return redirect()->route($this->module.'.list');
+   
     }
 
     public function public(Obj $obj, Request $request){

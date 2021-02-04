@@ -4,24 +4,23 @@ use App\Http\Controllers\Loyalty\RewardController;
 use App\Http\Controllers\Loyalty\CustomerController;
 use App\Http\Controllers\Loyalty\LoyaltySettingsController;
 
+use Illuminate\Support\Facades\Auth;
+
+// Dashboard
+Route::get('/loyalty/dashboard', [CustomerController::class, 'dashboard'])->middleware('auth')->name('Dashboard');
+
 // Reward Routes
 Route::get('/loyalty/reward', [RewardController::class, 'public'])->name('Reward.public');
-// Route::get('/loyalty/reward', [RewardController::class, 'index'])->name('Reward.index');
-// Route::get('/loyalty/reward/create', [RewardController::class, 'create'])->name('Reward.create');
-Route::post('/loyalty/reward/create', [RewardController::class, 'store'])->name('Reward.store');
-// Route::get('/loyalty/reward/edit', [RewardController::class, 'edit'])->name('Reward.edit');
-// Route::put('/loyalty/reward/{id}', [RewardController::class, 'update'])->name('Reward.update');
-// Route::delete('/loyalty/reward/{id}', [RewardController::class, 'delete'])->name('Reward.delete');
-// Route::get('/loyalty/rewards/', [RewardController::class, 'show'])->name('Reward.show');
+Route::post('/loyalty/reward/create', [RewardController::class, 'store'])->middleware('auth')->name('Reward.store');
 
 // Customer Routes
-Route::get('/loyalty/customers', [CustomerController::class, 'index'])->name('Customer.index');
-Route::get('/loyalty/customer/create', [CustomerController::class, 'create'])->name('Customer.create');
-Route::post('/loyalty/customer/create', [CustomerController::class, 'store'])->name('Customer.store');
-Route::get('/loyalty/customer/edit/{id}', [CustomerController::class, 'edit'])->name('Customer.edit');
-Route::put('/loyalty/customer/edit/{id}', [CustomerController::class, 'update'])->name('Customer.update');
-Route::delete('/loyalty/customer/{id}', [CustomerController::class, 'destroy'])->name('Customer.destroy');
-Route::get('/loyalty/customer/{id}', [CustomerController::class, 'show'])->name('Customer.show');
+Route::get('/loyalty/customers', [CustomerController::class, 'index'])->middleware('auth')->name('Customer.index');
+Route::get('/loyalty/customer/create', [CustomerController::class, 'create'])->middleware('auth')->name('Customer.create');
+Route::post('/loyalty/customer/create', [CustomerController::class, 'store'])->middleware('auth')->name('Customer.store');
+Route::get('/loyalty/customer/edit/{id}', [CustomerController::class, 'edit'])->middleware('auth')->name('Customer.edit');
+Route::put('/loyalty/customer/edit/{id}', [CustomerController::class, 'update'])->middleware('auth')->name('Customer.update');
+Route::delete('/loyalty/customer/{id}', [CustomerController::class, 'destroy'])->middleware('auth')->name('Customer.destroy');
+Route::get('/loyalty/customer/{id}', [CustomerController::class, 'show'])->middleware('auth')->name('Customer.show');
 
 // Setting Routes
 // Route::get('/loyalty/settings', [LoyaltySettingsController::class, 'index'])->name('Setting.index');

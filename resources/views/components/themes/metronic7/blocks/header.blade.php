@@ -1,7 +1,7 @@
 <!--begin::Header-->
 <div id="kt_header" class="header flex-column header-fixed">
 	<!--begin::Top-->
-	<div class="header-top">
+	<div class="header-top bg-dark">
 		<!--begin::Container-->
 		<div class="container">
 			<!--begin::Left-->
@@ -13,10 +13,9 @@
 				<!--end::Logo-->
 				<!--begin::Tab Navs(for desktop mode)-->
 				<div class="col-9 d-flex justify-content-center align-items-center">
-					<a href="" class="nav-link text-decoration-none text-white">Home</a>
-					<a href="" class="nav-link text-decoration-none text-white">Posts</a>
-					<a href="" class="nav-link text-decoration-none text-white">Categories</a>
-					<a href="" class="nav-link text-decoration-none text-white">Tags</a>
+					<a href="{{ route('Dashboard') }}" class="nav-link text-decoration-none text-white">Dashboard</a>
+					<a href="{{ route('Reward.public') }}" class="nav-link text-decoration-none text-white">Reward</a>
+					<a href="{{ route('Customer.index') }}" class="nav-link text-decoration-none text-white">Customers</a>
 				</div>
 
 				<!--begin::Tab Navs-->
@@ -30,8 +29,8 @@
 						@auth
 							<div class="nav-item mr-3">
 								<form method="POST" action="{{ route('logout') }}">
-								@csrf
-									<a href="#" class="btn btn-danger"  onclick="event.preventDefault();
+									@csrf
+									<a href="#" class="btn btn-light-danger font-weight-bold mr-2"  onclick="event.preventDefault();
 															this.closest('form').submit();">
 										Logout
 									</a>

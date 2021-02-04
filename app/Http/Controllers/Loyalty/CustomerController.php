@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Loyalty\Customer as Obj;
 use App\Models\Loyalty\Reward;
 
+use Illuminate\Support\Facades\Auth;
+
 class CustomerController extends Controller
 {
     /**
@@ -20,6 +22,9 @@ class CustomerController extends Controller
         $this->module   =   'Customer';
         $theme = session()->get('theme');
         $this->componentName = 'themes.'.$theme.'.layouts.app';
+
+        $user = Auth::user();
+        $this->user = $user;
     }
 
     /**
@@ -27,12 +32,10 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Obj $obj)
+    public function index(Obj $obj, Request $request)
     {
 
         $objs = $obj->sortable()->paginate();
-
-        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
         return view("apps.".$this->app.".".$this->module.".index")
                 ->with("app", $this)
@@ -48,8 +51,6 @@ class CustomerController extends Controller
     {
         // Authorize the request
         // $this->authorize('create', $obj);
-
-        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
         return view("apps.".$this->app.".".$this->module.".createedit")
                 ->with("stub", "create")
@@ -118,8 +119,6 @@ class CustomerController extends Controller
     {
         $obj = $obj->where("id", $id)->first();
 
-        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
-
         // Return to create if record was not found
         return view("apps.".$this->app.".".$this->module.".show")
                 ->with("app", $this)
@@ -138,8 +137,6 @@ class CustomerController extends Controller
         $obj = $obj->where("id", $id)->first();
         // Authorize the request
         // $this->authorize('create', $obj);
-
-        $this->componentName = 'themes.'.env('ADMIN_THEME').'.layouts.app';
 
         return view("apps.".$this->app.".".$this->module.".createedit")
                 ->with("stub", "update")
@@ -167,7 +164,7 @@ class CustomerController extends Controller
 
         return redirect()->route($this->module.'.index');
     }
-
+                                                                                                                                                                                            
     /**
      * Remove the specified resource from storage.
      *
@@ -185,5 +182,12 @@ class CustomerController extends Controller
         $obj->delete();
 
         return redirect()->route($this->module.'.index');
+    }
+
+    public function dashboard(Obj $obj){
+
+        return view("apps.".$this->app.".".$this->module.".dashboard")
+            ->with("app", $this)
+            ->with("obj", $obj);
     }
 }

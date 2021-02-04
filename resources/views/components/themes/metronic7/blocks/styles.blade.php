@@ -9,16 +9,11 @@
 <!--end::Global Theme Styles-->
 
 <!--begin::Page Vendors Styles(used by this page)-->
-<link href="{{ asset('themes/metronic/plugins/custom/fullcalendar/fullcalendar.bundle.css?v=7.0.5') }}" rel="stylesheet" type="text/css" />
 <!--end::Page Vendors Styles--
-
-<!-- TinyMCE -->
-<!-- <script src="https://cdn.tiny.cloud/1/uf9ks88mbg3hxvgbpgvohq8gb9snzsutwzjeo2h95vcu9pef/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
 
 <!-- Bootstrap -->
 <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }} " rel="stylesheet" type="text/css" />
 
 <!-- Custom Stylesheet -->
-<link rel="stylesheet" href="{{ asset('css/Blog/blog.css') }}">
 
 

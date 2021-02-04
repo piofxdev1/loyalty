@@ -1,1 +1,0 @@
-<script src="{{ asset('js/loyalty/loyalty.js') }}"></script>
