@@ -9,6 +9,8 @@ use App\Models\Loyalty\Customer as Obj;
 use App\Models\Loyalty\Reward;
 
 use Illuminate\Support\Facades\Auth;
+use App\Charts\CustomerChart;
+
 
 class CustomerController extends Controller
 {
@@ -186,8 +188,18 @@ class CustomerController extends Controller
 
     public function dashboard(Obj $obj){
 
+        $objs = $obj->select("name")->get();
+
+        $chart = new CustomerChart;
+
+        $chart->labels(['Jan', 'Feb', 'Mar']);
+
+        $chart->dataset('Users by trimester', 'line', [10, 25, 13]);
+
+
         return view("apps.".$this->app.".".$this->module.".dashboard")
             ->with("app", $this)
-            ->with("obj", $obj);
+            ->with("obj", $obj)
+            ->with("chart", $chart);
     }
 }

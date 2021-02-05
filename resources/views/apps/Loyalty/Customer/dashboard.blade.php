@@ -1,5 +1,12 @@
 <x-dynamic-component :component="$app->componentName">
 
+<div style="width: 50%">
+
+    {!! $CustomerChart->container() !!}
+
+</div>
+
+
 	<div class="container-mt-20">
 		<div class="row">
 		<!--begin::Card-->

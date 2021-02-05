@@ -14,3 +14,17 @@
 <script src="{{ asset('themes/metronic/plugins/custom/datatables/datatables.bundle.js?v=7.0.5') }}"></script>
 <script src="{{ asset('themes/metronic/js/pages/features/charts/apexcharts.js?v=7.0.5') }}"></script>
 <!--end::Page Scripts-->
+
+<!-- Charting library -->
+<script src="https://unpkg.com/chart.js@2.9.3/dist/Chart.min.js"></script>
+<!-- Chartisan -->
+<script src="https://unpkg.com/@chartisan/chartjs@^2.1.0/dist/chartisan_chartjs.umd.js"></script>
+
+{{-- ChartScript --}}
+
+@if($CustomerChart)
+
+{!! $CustomerChart->script() !!}
+
+@endif
+
