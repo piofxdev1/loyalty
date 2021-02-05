@@ -1,0 +1,121 @@
+$(document).ready(function () {
+    customer_chart();
+    credit_redeem_chart();
+});
+
+function customer_chart() {
+    let json_data = document
+        .getElementById("customer_chart_data")
+        .getAttribute("data-value");
+
+    let customer_chart_data = JSON.parse(json_data);
+
+    customers_chart_data = sortObject(customer_chart_data);
+
+    const apexChart = "#customers_chart";
+    var options = {
+        series: [
+            {
+                name: "New Customers",
+                data: Object.values(customer_chart_data),
+            },
+        ],
+        chart: {
+            height: 350,
+            type: "area",
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        stroke: {
+            curve: "smooth",
+        },
+        xaxis: {
+            categories: Object.keys(customer_chart_data),
+        },
+        colors: [primary, success],
+    };
+
+    var chart = new ApexCharts(document.querySelector(apexChart), options);
+    chart.render();
+}
+
+function credit_redeem_chart() {
+    let rewards_data = document
+        .getElementById("rewards_data")
+        .getAttribute("data-value");
+
+    let rewards = JSON.parse(rewards_data);
+
+    let credits = [];
+    let redeem = [];
+
+    for (let i in rewards) {
+        credits.push(rewards[i]["credits"]);
+        redeem.push(rewards[i]["redeem"]);
+    }
+
+    const apexChart = "#rewards_chart";
+    var options = {
+        series: [
+            {
+                name: "Credit",
+                data: credits,
+            },
+            {
+                name: "Redeem",
+                data: redeem,
+            },
+        ],
+        chart: {
+            type: "bar",
+            height: 350,
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: "55%",
+                endingShape: "rounded",
+            },
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ["transparent"],
+        },
+        xaxis: {
+            categories: Object.keys(rewards),
+        },
+        yaxis: {
+            title: {
+                text: "Points",
+            },
+        },
+        fill: {
+            opacity: 1,
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " points";
+                },
+            },
+        },
+        colors: [primary, success, warning],
+    };
+
+    var chart = new ApexCharts(document.querySelector(apexChart), options);
+    chart.render();
+}
+
+function sortObject(obj) {
+    return Object.keys(obj)
+        .sort()
+        .reduce(function (result, key) {
+            result[key] = obj[key];
+            return result;
+        }, {});
+}

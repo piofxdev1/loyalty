@@ -9,7 +9,6 @@ use App\Models\Loyalty\Customer as Obj;
 use App\Models\Loyalty\Reward;
 
 use Illuminate\Support\Facades\Auth;
-use App\Charts\CustomerChart;
 
 
 class CustomerController extends Controller
@@ -106,7 +105,7 @@ class CustomerController extends Controller
                 "credits" => $request->input('credits')
             ]);
     
-            return redirect()->route('Reward.public');
+            return redirect()->route('Customer.index');
         }
 
     }
@@ -186,20 +185,137 @@ class CustomerController extends Controller
         return redirect()->route($this->module.'.index');
     }
 
-    public function dashboard(Obj $obj){
+    public function dashboard(Obj $obj, Request $request, Reward $reward){
 
-        $objs = $obj->select("name")->get();
+        $customers = array();
+        $year = date("Y");
+        $month = date("m");
 
-        $chart = new CustomerChart;
+        $total_customers = $obj->all()->count();
 
-        $chart->labels(['Jan', 'Feb', 'Mar']);
+        $filter = $request->input('filter');
 
-        $chart->dataset('Users by trimester', 'line', [10, 25, 13]);
+        if(!empty($filter)){
+            if($filter == 'month'){
+                $objs = $obj->whereYear('created_at', $year)->get();
 
+                $new_customers = $objs->count();
 
+                foreach($objs as $obj){
+                    $key = date("M",strtotime($obj['created_at']));
+                    if(array_key_exists($key, $customers)){
+                        $customers[$key] += 1;
+                    }
+                    else{
+                        $customers += array(
+                            $key => 1,
+                        ); 
+                    }
+                }
+                $reward_objs = $reward->whereYear('created_at', $year)->get();
+
+                $rewards = array();
+            
+                foreach($reward_objs as $reward){
+                    $month = date("M",strtotime($reward['created_at']));
+                    if(array_key_exists($month, $rewards)){
+                        $rewards[$month]['credits'] += $reward['credits'];
+                        $rewards[$month]['redeem'] += $reward['redeem'];
+                    }
+                    else{
+                        $rewards += array(
+                            $month => array(
+                                "credits" => $reward['credits'],
+                                "redeem" => $reward['redeem'],
+                            ),
+                        ); 
+                    }
+                }
+            }
+            else if($filter == 'day'){
+                $objs = $obj->whereMonth('created_at', $month)->get();
+
+                $new_customers = $objs->count();
+
+                foreach($objs as $obj){
+                    $key = date("d",strtotime($obj['created_at']));
+                    if(array_key_exists($key, $customers)){
+                        $customers[$key] += 1;
+                    }
+                    else{
+                        $customers += array(
+                            $key => 1,
+                        ); 
+                    }
+                }
+
+                $reward_objs = $reward->whereMonth('created_at', $month)->get();
+
+                $rewards = array();
+            
+                foreach($reward_objs as $reward){
+                    $key = date("d",strtotime($reward['created_at']));
+                    if(array_key_exists($key, $rewards)){
+                        $rewards[$key]['credits'] += $reward['credits'];
+                        $rewards[$key]['redeem'] += $reward['redeem'];
+                    }
+                    else{
+                        $rewards += array(
+                            $key => array(
+                                "credits" => $reward['credits'],
+                                "redeem" => $reward['redeem'],
+                            ),
+                        ); 
+                    }
+                }
+            }
+        }
+        else{
+            $filter = "month";
+
+            $objs = $obj->whereYear('created_at', $year)->get();
+
+            $new_customers = $objs->count();
+
+            foreach($objs as $obj){
+                $key = date("M",strtotime($obj['created_at']));
+                if(array_key_exists($key, $customers)){
+                    $customers[$key] += 1;
+                }
+                else{
+                    $customers += array(
+                        $key => 1,
+                    ); 
+                }
+            }
+
+            $reward_objs = $reward->whereYear('created_at', $year)->get();
+
+            $rewards = array();
+        
+            foreach($reward_objs as $reward){
+                $key = date("M",strtotime($reward['created_at']));
+                if(array_key_exists($key, $rewards)){
+                    $rewards[$key]['credits'] += $reward['credits'];
+                    $rewards[$key]['redeem'] += $reward['redeem'];
+                }
+                else{
+                    $rewards += array(
+                        $key => array(
+                            "credits" => $reward['credits'],
+                            "redeem" => $reward['redeem'],
+                        ),
+                    ); 
+                }
+            }
+        }
+        
         return view("apps.".$this->app.".".$this->module.".dashboard")
             ->with("app", $this)
-            ->with("obj", $obj)
-            ->with("chart", $chart);
+            ->with("customers", json_encode($customers))
+            ->with("rewards", json_encode($rewards))
+            ->with("filter", $filter)
+            ->with("new_customers", $new_customers)
+            ->with("total_customers", $total_customers);
     }
 }

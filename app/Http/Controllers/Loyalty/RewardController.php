@@ -58,7 +58,6 @@ class RewardController extends Controller
     {
         // Authorize the request
         // $this->authorize('create', $obj);
-    
         
         // Get customer id
         $customer = Customer::where("phone", $request->input('phone'))->first();
@@ -77,7 +76,7 @@ class RewardController extends Controller
             "redeem" => $request->input('redeem'),
         ]);
 
-        return redirect()->route($this->module.'.public');
+        return redirect()->route($this->module.'.public', ['phone' => $customer->phone]);
     }
 
     /**
@@ -135,16 +134,34 @@ class RewardController extends Controller
             
             if($objs->count() >= 1){        
                 $remaining_credits = 0;
-                
+                $rewards = array();
+
+                $year = date("Y");
+
                 foreach($objs as $reward){
                     $remaining_credits = $remaining_credits + ($reward->credits - $reward->redeem);
+                }
+                
+                $objs_year = $obj->whereYear('created_at', $year)->get();
+
+                foreach($objs_year as $obj){
+                    $key = date("M",strtotime($obj['created_at']));
+                    if(array_key_exists($key, $rewards)){
+                        $rewards[$key] += 1;
+                    }
+                    else{
+                        $rewards += array(
+                            $key => 1,
+                        ); 
+                    }
                 }
                 
                 return view("apps.".$this->app.".".$this->module.".public")
                     ->with("app", $this)
                     ->with("objs", $objs)
                     ->with("phone", $phone)
-                    ->with("remaining_credits", $remaining_credits);
+                    ->with("remaining_credits", $remaining_credits)
+                    ->with("rewards", json_encode($rewards));
             }  
     
             return view("apps.".$this->app.".".$this->module.".public")

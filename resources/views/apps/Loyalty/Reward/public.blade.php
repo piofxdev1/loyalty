@@ -53,38 +53,65 @@
                                     </form>
                                 </div>
 
+                                <div id="user_balance_data" data-value="{{ $rewards ?? ''}}"></div>
+
                                 @if($objs ?? "")
                                     @if($remaining_credits ?? '')
                                         <div class="card card-custom gutter-b mt-5">
-                                            <div class="card-header">
+                                            <div class="d-flex justify-content-between align-items-user p-3 border-bottom">
                                                 <h3 class="d-flex align-items-center">
                                                     <span class="mr-2">
                                                         <i class="flaticon-piggy-bank icon-2x text-muted font-weight-bold"></i>
                                                     </span>
                                                     Balance
                                                 </h3>
+                                                @auth
+                                                    <a href="{{ route('Customer.show', $objs[0]->customer_id ) }}" class="btn btn-outline-dark">
+                                                        <i class="fas fa-user-circle"></i> User
+                                                    </a>
+                                                @endauth
                                             </div>
                                             <div class="card-body">
-                                                <h1>$ {{ $remaining_credits }}</h1>
+                                                <h1 class="d-flex align-items-center"><i class="fas fa-wallet text-muted mr-2" style="font-size: 2rem;"></i> {{ $remaining_credits }}</h1>
                                             </div>
                                         </div>
 
+                                         <!--begin::Tiles Widget 17-->
+												<div class="card card-custom gutter-b" style="height: 300px;">
+													<!--begin::Body-->
+													<div class="card-body d-flex flex-column p-0">
+														<!--begin::Stats-->
+														<div class="flex-grow-1 text-right card-spacer pb-0">
+															<div class="font-weight-bolder font-size-h2">{{ $remaining_credits }}</div>
+															<div class="text-muted font-weight-bold">Remaining Credits</div>
+														</div>
+														<!--end::Stats-->
+														<!--begin::Chart-->
+														<div id="user_balance_chart" class="card-rounded-bottom" style="height: 150px"></div>
+														<!--end::Chart-->
+													</div>
+													<!--end::Body-->
+												</div>
+												<!--end::Tiles Widget 17-->
+
                                         @auth
-                                            <form action="{{ route($app->module.'.store') }}" class="mt-5" method="POST">
-                                                @csrf
-                            
-                                                <div class="d-flex align-items-center">
-                                                    <!-- <label>Credit:</label> -->
-                                                    <input type="text" class="form-control" name="credit" placeholder="Credit">
+                                            <div class="card card-custom p-3">
+                                                <form action="{{ route($app->module.'.store') }}" class="mt-5" method="POST">
+                                                    @csrf
+                                
+                                                    <div class="d-flex align-items-center">
+                                                        <!-- <label>Credit:</label> -->
+                                                        <input type="text" class="form-control" name="credit" placeholder="Credit">
 
-                                                    <!-- <label>Redeem:</label> -->
-                                                    <input type="text" class="form-control ml-3" name="redeem" placeholder="Redeem">
-                                                </div>
+                                                        <!-- <label>Redeem:</label> -->
+                                                        <input type="text" class="form-control ml-3" name="redeem" placeholder="Redeem">
+                                                    </div>
 
-                                                <input type="text" hidden name="phone" value="{{ $phone }}">
-                                                <button type="submit" class="btn btn-dark mt-3">Add</button>
+                                                    <input type="text" hidden name="phone" value="{{ $phone }}">
+                                                    <button type="submit" class="btn btn-dark mt-3">Add</button>
 
-                                            </form>
+                                                </form>
+                                            </div>
                                         @endauth
                                     @else
                                         @auth
@@ -129,6 +156,151 @@
 		
 		@include('components.themes.metronic7.blocks.scrolltop')
 		@include('components.themes.metronic7.blocks.scripts')
+
+        <script>
+            $(document).ready(function () {
+                let user_balance_data = document
+                        .getElementById("user_balance_data")
+                        .getAttribute("data-value");
+
+                user_balance_data = JSON.parse(user_balance_data);
+
+                var element = document.getElementById("user_balance_chart");
+                var height = parseInt(KTUtil.css(element, 'height'));
+                var color = KTUtil.hasAttr(element, 'data-color') ? KTUtil.attr(element, 'data-color') : 'info';
+
+                if (!element) {
+                    return;
+                }
+
+                console.log(user_balance_data);
+
+                var options = {
+                    series: [{
+                        name: 'Net Profit',
+                        data: Object.values(user_balance_data)
+                    }],
+                    chart: {
+                        type: 'area',
+                        height: height,
+                        toolbar: {
+                            show: false
+                        },
+                        zoom: {
+                            enabled: false
+                        },
+                        sparkline: {
+                            enabled: true
+                        }
+                    },
+                    plotOptions: {},
+                    legend: {
+                        show: false
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    fill: {
+                        type: 'solid',
+                        opacity: 1
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        show: true,
+                        width: 3,
+                        colors: [KTApp.getSettings()['colors']['theme']['base'][color]]
+                    },
+                    xaxis: {
+                        categories: Object.keys(user_balance_data),
+                        axisBorder: {
+                            show: false,
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        labels: {
+                            show: false,
+                            style: {
+                                colors: KTApp.getSettings()['colors']['gray']['gray-500'],
+                                fontSize: '12px',
+                                fontFamily: KTApp.getSettings()['font-family']
+                            }
+                        },
+                        crosshairs: {
+                            show: false,
+                            position: 'front',
+                            stroke: {
+                                color: KTApp.getSettings()['colors']['gray']['gray-300'],
+                                width: 1,
+                                dashArray: 3
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            formatter: undefined,
+                            offsetY: 0,
+                            style: {
+                                fontSize: '12px',
+                                fontFamily: KTApp.getSettings()['font-family']
+                            }
+                        }
+                    },
+                    yaxis: {
+                        min: 0,
+                        max: 32,
+                        labels: {
+                            show: false,
+                            style: {
+                                colors: KTApp.getSettings()['colors']['gray']['gray-500'],
+                                fontSize: '12px',
+                                fontFamily: KTApp.getSettings()['font-family']
+                            }
+                        }
+                    },
+                    states: {
+                        normal: {
+                            filter: {
+                                type: 'none',
+                                value: 0
+                            }
+                        },
+                        hover: {
+                            filter: {
+                                type: 'none',
+                                value: 0
+                            }
+                        },
+                        active: {
+                            allowMultipleDataPointsSelection: false,
+                            filter: {
+                                type: 'none',
+                                value: 0
+                            }
+                        }
+                    },
+                    tooltip: {
+                        style: {
+                            fontSize: '12px',
+                            fontFamily: KTApp.getSettings()['font-family']
+                        },
+                        y: {
+                            formatter: function(val) {
+                                return "$" + val + " thousands"
+                            }
+                        }
+                    },
+                    colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
+                    markers: {
+                        colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
+                        strokeColor: [KTApp.getSettings()['colors']['theme']['base'][color]],
+                        strokeWidth: 3
+                    }
+                };
+
+                var chart = new ApexCharts(element, options);
+                chart.render();
+            });
+        </script>
 	</body>
 	<!--end::Body-->
 </html>
