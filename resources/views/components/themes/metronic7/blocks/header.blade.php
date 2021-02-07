@@ -1,13 +1,13 @@
 <!--begin::Header-->
-<div id="kt_header" class="header flex-column header-fixed">
+<div id="kt_header" class="header flex-column d-none d-lg-block">
 	<!--begin::Top-->
 	<div class="header-top bg-dark">
 		<!--begin::Container-->
-		<div class="container">
+		<div class="container d-flex justify-content-between">
 			<!--begin::Left-->
 			<div class="d-flex align-items-center">
 				<!--begin::Logo-->
-					<a href="" class="mr-20">
+					<a href="{{ route('Dashboard') }}" class="mr-20">
 						<img alt="Logo" src="{{ asset('img/logos/piofx-white.png')}}" class="max-h-45px" />
 					</a>
 				<!--end::Logo-->
@@ -50,11 +50,11 @@
 				<div class="topbar-item">
 					<div class="btn btn-icon btn-hover-transparent-white w-auto d-flex align-items-center btn-lg px-2" id="kt_quick_user_toggle">
 						<div class="d-flex flex-column text-right pr-3">
-							<span class="text-white opacity-50 font-weight-bold font-size-sm d-none d-md-inline">Sean</span>
-							<span class="text-white font-weight-bolder font-size-sm d-none d-md-inline">UX Designer</span>
+							<span class="text-white opacity-50 font-weight-bold font-size-sm d-none d-md-inline">{{ Auth::user()->name }}</span>
+							<span class="text-white font-weight-bolder font-size-sm d-none d-md-inline">{{ Auth::user()->role }}</span>
 						</div>
 						<span class="symbol symbol-35">
-							<span class="symbol-label font-size-h5 font-weight-bold text-white bg-white-o-30">S</span>
+							<span class="symbol-label font-size-h5 font-weight-bold text-white bg-white-o-30"></span>
 						</span>
 					</div>
 				</div>
@@ -65,6 +65,6 @@
 		<!--end::Container-->
 	</div>
 	<!--end::Top-->
-
+	
 </div>
 <!--end::Header-->

@@ -91,43 +91,49 @@
                 <!--begin: Item-->
                 <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
                     <span class="mr-4">
-                        <i class="flaticon-piggy-bank icon-2x text-muted font-weight-bold"></i>
+                        <i class="flaticon-piggy-bank icon-2x text-success font-weight-bolder"></i>
                     </span>
                     <div class="d-flex flex-column text-dark-75">
                         <span class="font-weight-bolder font-size-sm">Earnings</span>
                         <span class="font-weight-bolder font-size-h5">                         
-                        <span class="text-dark-50 font-weight-bold">$</span>{{ $credits }}</span>
+                            {{ $credits }} 
+                            <span class="text-dark-50 font-weight-bold"> points</span>
+                        </span>
                     </div>
                 </div>
                 <!--end: Item-->
                 <!--begin: Item-->
                 <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
                     <span class="mr-4">
-                        <i class="flaticon-confetti icon-2x text-muted font-weight-bold"></i>
+                        <i class="flaticon-confetti icon-2x text-danger font-weight-bolder"></i>
                     </span>
                     <div class="d-flex flex-column text-dark-75">
                         <span class="font-weight-bolder font-size-sm">Expenses</span>
                         <span class="font-weight-bolder font-size-h5">
-                        <span class="text-dark-50 font-weight-bold">$</span>{{ $redeem }}</span>
+                            {{ $redeem }} 
+                            <span class="text-dark-50 font-weight-bold"> points</span>
+                        </span>
                     </div>
                 </div>
                 <!--end: Item-->
                 <!--begin: Item-->
                 <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
                     <span class="mr-4">
-                        <i class="flaticon-pie-chart icon-2x text-muted font-weight-bold"></i>
+                        <i class="flaticon-pie-chart icon-2x text-info font-weight-bolder"></i>
                     </span>
                     <div class="d-flex flex-column text-dark-75">
                         <span class="font-weight-bolder font-size-sm">Net</span>
                         <span class="font-weight-bolder font-size-h5">
-                        <span class="text-dark-50 font-weight-bold">$</span>{{ $credits - $redeem }}</span>
+                            {{ $credits - $redeem }} 
+                            <span class="text-dark-50 font-weight-bold"> points</span>
+                        </span>
                     </div>
                 </div>
                 <!--end: Item-->
                 <!--begin: Item-->
                 <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
                     <span class="mr-4">
-                        <i class="flaticon-file-2 icon-2x text-muted font-weight-bold"></i>
+                        <i class="flaticon-file-2 icon-2x text-primary font-weight-bolder"></i>
                     </span>
                     <div class="d-flex flex-column flex-lg-fill">
                         <span class="text-dark-75 font-weight-bolder font-size-sm">{{ $obj->rewards->count() }} Transactions</span>
@@ -144,11 +150,11 @@
         <!-- Table -->
         <table class="table table-borderless bg-white">
             <tr class="border-bottom">
-                <th scope="col" class="p-3">#</th>
+                <th scope="col" class="p-3">Transaction Id</th>
                 <th scope="col" class="p-3 text-center text-decoration-none">Date</th>
                 <th scope="col" class="p-3 text-center">Activity</th>
             </tr>
-            @foreach($obj->rewards()->orderBy('id', 'desc')->get() as $key=>$obj)
+            @foreach($rewards as $key=>$obj)
                 <tr class="border-bottom">
                     <th scope="row" class="px-3 align-middle">{{  $obj->id }}</th>
                     <td class="px-3 align-middle text-center font-weight-bolder">{{ $obj->created_at ? $obj->created_at->diffForHumans() : '' }}</td>
@@ -157,6 +163,9 @@
             @endforeach
         </table>
         <!-- End Table -->
+        <!-- Pagination -->
+            {{$rewards->links()}}
+        <!-- End Pagination -->
     </div>
 
 

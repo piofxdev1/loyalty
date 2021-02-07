@@ -7,12 +7,11 @@
 
 	<div class="card card-custom p-3 mb-3">
 		<h5>Filter:</h5>
-		<form action="{{ route('Dashboard') }}" method="GET" class="d-flex">
-			<select class="form-select" name="filter">
+		<form action="{{ route('Dashboard') }}" method="GET" class="d-flex" id="filter_form">
+			<select class="form-select" name="filter" onchange="filter_charts_result()">
 				<option value="day" @if($filter ?? ""){{$filter == 'day' ? "selected" : "" }}@endif>Day</option>
 				<option value="month" @if($filter ?? ""){{$filter == 'month' ? "selected" : "" }}@endif>Month</option>
 			</select>
-			<button type='submit' class="btn btn-outline-dark ml-3">Refresh</button>
 		</form>
 	</div>
 

@@ -23,9 +23,6 @@ class CustomerController extends Controller
         $this->module   =   'Customer';
         $theme = session()->get('theme');
         $this->componentName = 'themes.'.$theme.'.layouts.app';
-
-        $user = Auth::user();
-        $this->user = $user;
     }
 
     /**
@@ -36,7 +33,11 @@ class CustomerController extends Controller
     public function index(Obj $obj, Request $request)
     {
 
-        $objs = $obj->sortable()->paginate();
+        // Check if any search query is present
+        $query = $request->input("query");
+
+        // Retrieve records
+        $objs = $obj->where("name", "LIKE", "%{$query}%")->sortable()->paginate(10);
 
         return view("apps.".$this->app.".".$this->module.".index")
                 ->with("app", $this)
@@ -70,6 +71,7 @@ class CustomerController extends Controller
         // Authorize the request
         // $this->authorize('create', $obj);  
 
+        // Validate the request object
         $validated = $request->validate([
             "name" => 'required',
             "phone" => 'required|digits:10',
@@ -118,12 +120,16 @@ class CustomerController extends Controller
      */
     public function show(Obj $obj, $id)
     {
+        // Retrieve the record
         $obj = $obj->where("id", $id)->first();
 
-        // Return to create if record was not found
+        // Retrieve related records
+        $rewards = $obj->rewards()->orderBy('id', 'desc')->paginate(10);
+
         return view("apps.".$this->app.".".$this->module.".show")
                 ->with("app", $this)
-                ->with("obj", $obj);
+                ->with("obj", $obj)
+                ->with("rewards", $rewards);
     }
 
     /**
@@ -136,6 +142,7 @@ class CustomerController extends Controller
     {
         // Retrieve Specific record
         $obj = $obj->where("id", $id)->first();
+
         // Authorize the request
         // $this->authorize('create', $obj);
 
@@ -157,6 +164,7 @@ class CustomerController extends Controller
 
         // load the resource
         $obj = $obj->where('id',$id)->first();
+
         // authorize the app
         // $this->authorize('update', $obj);
 
@@ -177,8 +185,10 @@ class CustomerController extends Controller
 
         // load the resource
         $obj = $obj->where('id',$id)->first();
+
         // authorize
         // $this->authorize('update', $obj);
+
         // delete the resource
         $obj->delete();
 
@@ -187,20 +197,32 @@ class CustomerController extends Controller
 
     public function dashboard(Obj $obj, Request $request, Reward $reward){
 
+        // Initialize required variables
         $customers = array();
         $year = date("Y");
         $month = date("m");
 
+        // Get total count of customers in the database
         $total_customers = $obj->all()->count();
 
+        // Get the filter if exists
         $filter = $request->input('filter');
 
+        // Check if filter not empty
         if(!empty($filter)){
             if($filter == 'month'){
+                // Retrieve records of that particular year
                 $objs = $obj->whereYear('created_at', $year)->get();
 
+                // Get count of the customers in that particular year
                 $new_customers = $objs->count();
 
+                // Create an array of customers in that particular year for each month
+                // Associative array format:
+                    // {
+                    //      "Jan": 1,
+                    //      "Feb": 2, 
+                    // }
                 foreach($objs as $obj){
                     $key = date("M",strtotime($obj['created_at']));
                     if(array_key_exists($key, $customers)){
@@ -212,10 +234,25 @@ class CustomerController extends Controller
                         ); 
                     }
                 }
+
+                // Retrieve records of that particular year
                 $reward_objs = $reward->whereYear('created_at', $year)->get();
 
+                // Create an array to store the rewards data
                 $rewards = array();
             
+                // Create an array of credit and redeem points of that particular year for each month
+                // Associative array format:
+                    // {
+                    //      "Jan": {
+                    //                  "credits": 100,
+                    //                  "redeem": 40
+                    //              },
+                    //      "Feb": {
+                    //                  "credits": 30,
+                    //                  "redeem":10,
+                    //              }, 
+                    // }
                 foreach($reward_objs as $reward){
                     $month = date("M",strtotime($reward['created_at']));
                     if(array_key_exists($month, $rewards)){
@@ -233,10 +270,18 @@ class CustomerController extends Controller
                 }
             }
             else if($filter == 'day'){
+                // Retrieve records of that particular month
                 $objs = $obj->whereMonth('created_at', $month)->get();
 
+                // Get the number of customers in that particular month
                 $new_customers = $objs->count();
 
+                // Create an array of customers in that particular month for each day
+                // Associative array format:
+                    // {
+                    //      "1": 9,
+                    //      "2": 15, 
+                    // }
                 foreach($objs as $obj){
                     $key = date("d",strtotime($obj['created_at']));
                     if(array_key_exists($key, $customers)){
@@ -249,10 +294,24 @@ class CustomerController extends Controller
                     }
                 }
 
+                // Retrieve credit and redeem points in that particular month
                 $reward_objs = $reward->whereMonth('created_at', $month)->get();
 
+                // Initialize array to store the rewards data
                 $rewards = array();
-            
+
+                // Create an array of credit and redeem points of that particular month for each day
+                // Associative array format:
+                    // {
+                    //      "2": {
+                    //                  "credits": 100,
+                    //                  "redeem": 40
+                    //              },
+                    //      "5": {
+                    //                  "credits": 30,
+                    //                  "redeem":10,
+                    //              }, 
+                    // }
                 foreach($reward_objs as $reward){
                     $key = date("d",strtotime($reward['created_at']));
                     if(array_key_exists($key, $rewards)){
@@ -271,12 +330,21 @@ class CustomerController extends Controller
             }
         }
         else{
+            // Default filter is det to month
             $filter = "month";
 
+            // Retrieve records of that particular year
             $objs = $obj->whereYear('created_at', $year)->get();
 
+            // Get count of the customers in that particular year
             $new_customers = $objs->count();
 
+            // Create an array of customers in that particular year for each month
+            // Associative array format:
+                // {
+                //      "Jan": 1,
+                //      "Feb": 2, 
+                // }
             foreach($objs as $obj){
                 $key = date("M",strtotime($obj['created_at']));
                 if(array_key_exists($key, $customers)){
@@ -289,10 +357,24 @@ class CustomerController extends Controller
                 }
             }
 
+            // Retrieve records of that particular year
             $reward_objs = $reward->whereYear('created_at', $year)->get();
 
+            // Create an array to store the rewards data
             $rewards = array();
-        
+                        
+            // Create an array of credit and redeem points of that particular year for each month
+            // Associative array format:
+                // {
+                //      "Jan": {
+                //                  "credits": 100,
+                //                  "redeem": 40
+                //              },
+                //      "Feb": {
+                //                  "credits": 30,
+                //                  "redeem":10,
+                //              }, 
+                // }
             foreach($reward_objs as $reward){
                 $key = date("M",strtotime($reward['created_at']));
                 if(array_key_exists($key, $rewards)){

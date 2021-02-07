@@ -14,7 +14,6 @@
 	<!--begin::Body-->
 	<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled page-loading bg-light">
 		<!--begin::Main-->
-		
 		@include('components.themes.metronic7.blocks.header_mobile')
 		<div class="d-flex flex-column flex-root">
 			<!--begin::Page-->
@@ -25,7 +24,7 @@
 					@include('components.themes.metronic7.blocks.header')
 
 					<!--begin::Content-->
-					<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+					<div class="content d-flex flex-column flex-column-fluid pt-0 pt-lg-3" id="kt_content">
 						<!--begin::Entry-->
 						<div class="d-flex flex-column-fluid">
 							<!--begin::Container-->

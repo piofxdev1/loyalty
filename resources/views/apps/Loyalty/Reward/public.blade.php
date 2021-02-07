@@ -19,19 +19,27 @@
 			<div class="d-flex flex-row flex-column-fluid page">
 				<!--begin::Wrapper-->
 				<div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
-					
-
 					<!--begin::Content-->
-					<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+					<div class="content d-flex flex-column flex-column-fluid pt-0 pt-lg-5" id="kt_content">
 						<!--begin::Entry-->
 						<div class="d-flex flex-column-fluid">
 							<!--begin::Container-->
 							<div class="container">
                                 @if($alert ?? "")
-                                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                                    {{ $alert }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
+                                    @guest
+                                        <div class="container-lg mt-3">
+                                            <!--begin::Engage Widget 7-->
+                                            <div class="card card-custom card-stretch gutter-b">
+                                                <div class="card-body d-flex p-0">
+                                                    <div class="flex-grow-1 p-12 card-rounded bgi-no-repeat d-flex flex-column justify-content-center align-items-start shadow" style="background-color: #FFF4DE; background-position: right bottom; background-size: auto 100%; background-image: url({{ asset('themes/metronic/media/svg/humans/custom-8.svg') }})">
+                                                        <h3 class="text-danger font-weight-bolder m-0">No records found</h3>
+                                                        <h5 class="text-dark-50 font-size-xl font-weight-bold">Please contact the Sales Executive</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--end::Engage Widget 7-->
+                                        </div>
+                                    @endguest
                                 @endif
 
                                 @if ($errors->any())
@@ -46,10 +54,10 @@
 
                                 <div class="card p-5 card-custom rounded-lg mt-5">
                                     <form action="{{ route($app->module.'.public') }}">
-                                        <h2 class="text-center">Check Reward</h2>
+                                        <h2 class="text-center text-dark font-weight-bolder">Check Reward</h2>
                                         <h5 class="text-muted">Phone Number:</h5>
-                                        <input type="text" name="phone" class="form-control mb-3" value="{{ $phone ?? "" }}">
-                                        <button type="submit" class="btn btn-primary">Search</button>
+                                        <input type="text" name="phone" class="form-control mb-3" value="{{ $phone ?? "" }}" required>
+                                        <button type="submit" class="btn btn-light-primary">Search</button>
                                     </form>
                                 </div>
 
@@ -57,87 +65,93 @@
 
                                 @if($objs ?? "")
                                     @if($remaining_credits ?? '')
-                                        <div class="card card-custom gutter-b mt-5">
-                                            <div class="d-flex justify-content-between align-items-user p-3 border-bottom">
-                                                <h3 class="d-flex align-items-center">
-                                                    <span class="mr-2">
-                                                        <i class="flaticon-piggy-bank icon-2x text-muted font-weight-bold"></i>
-                                                    </span>
-                                                    Balance
-                                                </h3>
-                                                @auth
-                                                    <a href="{{ route('Customer.show', $objs[0]->customer_id ) }}" class="btn btn-outline-dark">
-                                                        <i class="fas fa-user-circle"></i> User
-                                                    </a>
-                                                @endauth
+                                        <!--begin::Mixed Widget 20-->
+                                        <div class="card card-custom bgi-no-repeat gutter-b mt-5" style="background-color: #4AB58E; background-position: 100% bottom; background-size: auto auto; background-image: url({{ asset('themes/metronic/media/svg/humans/custom-1.svg') }})">
+                                            <div class="d-flex align-items-center pl-9 pt-3">
+                                                <i class="flaticon-piggy-bank icon-2x text-dark mr-2 font-weight-bolder"></i>
+                                                <h3 class="m-0">Balance</h3>
                                             </div>
-                                            <div class="card-body">
-                                                <h1 class="d-flex align-items-center"><i class="fas fa-wallet text-muted mr-2" style="font-size: 2rem;"></i> {{ $remaining_credits }}</h1>
+                                            <!--begin::Body-->
+                                            <div class="card-body d-flex align-items-center">
+                                                <div class="">
+                                                    <div class="d-flex align-items-center">
+                                                        <h1 class="text-white font-weight-bolder mr-3 d-flex align-items-center">{{ $remaining_credits }} Points</h1>
+                                                        @auth
+                                                            <a href="{{ route('Customer.show', $objs[0]->id) }}" class="btn btn-icon btn-light-success pulse pulse-success">
+                                                                <i class="fas fa-stream ml-3"></i>
+                                                                <span class="pulse-ring"></span>
+                                                            </a>
+                                                        @endauth
+                                                    </div>
+                                                   
+                                                    <h3 class="text-success font-weight-bolder">Remaining Balance</h3>
+                                                </div>
                                             </div>
-                                        </div>
+                                            <!--end::Body-->
 
-                                         <!--begin::Tiles Widget 17-->
-												<div class="card card-custom gutter-b" style="height: 300px;">
-													<!--begin::Body-->
-													<div class="card-body d-flex flex-column p-0">
-														<!--begin::Stats-->
-														<div class="flex-grow-1 text-right card-spacer pb-0">
-															<div class="font-weight-bolder font-size-h2">{{ $remaining_credits }}</div>
-															<div class="text-muted font-weight-bold">Remaining Credits</div>
-														</div>
-														<!--end::Stats-->
-														<!--begin::Chart-->
-														<div id="user_balance_chart" class="card-rounded-bottom" style="height: 150px"></div>
-														<!--end::Chart-->
-													</div>
-													<!--end::Body-->
-												</div>
-												<!--end::Tiles Widget 17-->
+
+
+                                        </div>
+                                        <!--end::Mixed Widget 20-->
 
                                         @auth
-                                            <div class="card card-custom p-3">
-                                                <form action="{{ route($app->module.'.store') }}" class="mt-5" method="POST">
-                                                    @csrf
-                                
+                                            <!--begin::Tiles Widget 25-->
+                                            <div class="card card-custom bgi-no-repeat bgi-size-cover gutter-b bg-dark" style="height: 250px; background-image: url({{ asset('themes/metronic/media/svg/patterns/taieri.svg') }}">
+                                                <div class="card-body d-flex">
                                                     <div class="d-flex align-items-center">
-                                                        <!-- <label>Credit:</label> -->
-                                                        <input type="text" class="form-control" name="credit" placeholder="Credit">
+                                                        <div>
+                                                            <form action="{{ route($app->module.'.store') }}" class="" method="POST">
+                                                                @csrf
+                                            
+                                                                <div class="d-block d-lg-flex align-items-center">
+                                                                    <!-- <label>Credit:</label> -->
+                                                                    <input type="text" class="form-control form-control-lg" name="credit" placeholder="Credit">
 
-                                                        <!-- <label>Redeem:</label> -->
-                                                        <input type="text" class="form-control ml-3" name="redeem" placeholder="Redeem">
+                                                                    <!-- <label>Redeem:</label> -->
+                                                                    <input type="text" class="form-control form-control-lg mt-3 mt-lg-0 ml-lg-3" name="redeem" placeholder="Redeem">
+                                                                </div>
+
+                                                                <input type="text" hidden name="phone" value="{{ $phone }}">
+                                                                <button type="submit" class="btn btn-lg btn-light-danger btn-shadow font-weight-bold mt-3 px-4">Add</button>
+                                                            </form>
+                                                        </div>
                                                     </div>
-
-                                                    <input type="text" hidden name="phone" value="{{ $phone }}">
-                                                    <button type="submit" class="btn btn-dark mt-3">Add</button>
-
-                                                </form>
+                                                </div>
                                             </div>
+                                            <!--end::Tiles Widget 25-->
                                         @endauth
                                     @else
                                         @auth
-                                            <div class="p-5 mt-5 bg-white rounded shadow">
+                                            <div class="p-5 mt-5 bg-dark text-white rounded shadow">
                                                 <h1 class="text-center">Create Customer</h1>
                                                 <form action="{{ route('Customer.store') }}" method="POST">
                                                     @csrf
-                                                    <label >Name:</label>
-                                                    <input type="text" class="form-control mt-1" name="name">
-                                                    <label class="mt-3">Phone:</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">+91</span>
-                                                        <input type="text" class="form-control" name="phone">
+                                                    <div class="row g-3 mt-4">
+                                                        <div class="col-12 col-lg-6">
+                                                            <label >Name:</label>
+                                                            <input type="text" class="form-control" name="name" required>
+                                                        </div>
+                                                        <div class="col-12 col-lg-6">
+                                                            <label>Phone:</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text">+91</span>
+                                                                <input type="text" class="form-control" name="phone" required>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <label class="mt-3">Email:</label>
-                                                    <input type="email" class="form-control mt-1" name="email">
+                                                    <input type="email" class="form-control" name="email" required>
                                                     <label class="mt-3">Address:</label>
-                                                    <textarea type="text" class="form-control mt-1" name="address"></textarea>
+                                                    <textarea type="text" class="form-control" name="address" required></textarea>
                                                     <label class="mt-3">Credits:</label>
-                                                    <input type="text" class="form-control mt-1" name="credits">
-                                                    <button type="submit" class="btn btn-dark mt-3">Create</button>
+                                                    <input type="text" class="form-control" name="credits" required>
+                                                    <button type="submit" class="btn btn-light-danger px-4 mt-4">Create</button>
                                                 </form>
                                             </div>
                                         @endauth
                                     @endif
                                 @endif
+
 							</div>
 							<!--end::Container-->
 						</div>
@@ -173,7 +187,7 @@
                     return;
                 }
 
-                console.log(user_balance_data);
+                console.log(Object.keys(user_balance_data));
 
                 var options = {
                     series: [{

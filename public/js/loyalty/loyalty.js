@@ -1,8 +1,10 @@
+// Initialize the function as soon as page loads
 $(document).ready(function () {
     customer_chart();
     credit_redeem_chart();
 });
 
+// Chart for Customers
 function customer_chart() {
     let json_data = document
         .getElementById("customer_chart_data")
@@ -23,6 +25,9 @@ function customer_chart() {
         chart: {
             height: 350,
             type: "area",
+            toolbar: {
+                show: false,
+            },
         },
         dataLabels: {
             enabled: false,
@@ -40,6 +45,7 @@ function customer_chart() {
     chart.render();
 }
 
+// Chart for credits and redeem points
 function credit_redeem_chart() {
     let rewards_data = document
         .getElementById("rewards_data")
@@ -111,6 +117,7 @@ function credit_redeem_chart() {
     chart.render();
 }
 
+// Sort data in the object
 function sortObject(obj) {
     return Object.keys(obj)
         .sort()
@@ -118,4 +125,8 @@ function sortObject(obj) {
             result[key] = obj[key];
             return result;
         }, {});
+}
+
+function filter_charts_result() {
+    document.getElementById("filter_form").submit();
 }

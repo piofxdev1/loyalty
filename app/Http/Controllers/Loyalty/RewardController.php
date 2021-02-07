@@ -23,9 +23,6 @@ class RewardController extends Controller
         $this->module   =   'Reward';
         $theme = session()->get('theme');
         $this->componentName = 'themes.'.$theme.'.layouts.app';
-
-        $user = Auth::user();
-        $this->user = $user;
     }
 
     /**
@@ -61,12 +58,10 @@ class RewardController extends Controller
         
         // Get customer id
         $customer = Customer::where("phone", $request->input('phone'))->first();
-        // ddd($customer);
 
+        // Get data from request object
         $credit = $request->input('credit');
         $redeem = $request->input('redeem');
-
-        // ddd($credit);
 
         // Store the records
         $obj->create([
@@ -127,41 +122,34 @@ class RewardController extends Controller
 
     public function public(Obj $obj, Request $request){
 
+        // Check if request object is empty
         if(!empty($request->input('phone'))){
+            // Validate the request object
+            $validated = $request->validate([
+                "phone" => 'required|digits:10',
+            ]);
+
+            // Retrieve request variable
             $phone = $request->input('phone');
         
+            // Retrieve records with that particular phone number
             $objs = $obj->where('phone', $phone)->get(); 
             
-            if($objs->count() >= 1){        
+            // Execute only if there is atleast one record
+            if($objs->count() >= 1){     
+                // Initialize required variables   
                 $remaining_credits = 0;
-                $rewards = array();
 
-                $year = date("Y");
-
+                // Calculate the remaining reward points
                 foreach($objs as $reward){
                     $remaining_credits = $remaining_credits + ($reward->credits - $reward->redeem);
-                }
-                
-                $objs_year = $obj->whereYear('created_at', $year)->get();
-
-                foreach($objs_year as $obj){
-                    $key = date("M",strtotime($obj['created_at']));
-                    if(array_key_exists($key, $rewards)){
-                        $rewards[$key] += 1;
-                    }
-                    else{
-                        $rewards += array(
-                            $key => 1,
-                        ); 
-                    }
                 }
                 
                 return view("apps.".$this->app.".".$this->module.".public")
                     ->with("app", $this)
                     ->with("objs", $objs)
                     ->with("phone", $phone)
-                    ->with("remaining_credits", $remaining_credits)
-                    ->with("rewards", json_encode($rewards));
+                    ->with("remaining_credits", $remaining_credits);
             }  
     
             return view("apps.".$this->app.".".$this->module.".public")
